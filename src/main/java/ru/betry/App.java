@@ -3,12 +3,46 @@
  */
 package ru.betry;
 
+
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.User;
+import com.pengrad.telegrambot.request.SendMessage;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
-    }
+
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+
+        String TOKEN = "1347256899:AAE5HrH2bRs8fQdSOq9TSTI_nO1Y8eYpxWw";
+            //ID   Пользователь
+        Map<Integer, User> users = new HashMap<>();
+
+        TelegramBot bot = new TelegramBot(TOKEN);
+        bot.setUpdatesListener(updates -> {
+            updates.forEach(System.out::println);
+            //логин и пароль
+            //изображение
+            //текст под изображением
+            //геопозиция
+
+            updates.forEach(update -> {
+                Integer userID = update.message().from().id();
+                if (!users.containsKey(userID)) {
+                    bot.execute(new SendMessage(update.message().chat().id(),
+                            "Вам необходимо прислать логин и пароль в одной строке через пробел"));
+                    users.put(update.message().from().id(), null);
+                }
+            });
+
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        });
     }
+
+
+
+
 }
