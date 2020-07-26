@@ -4,6 +4,8 @@
 package InstaramBot;
 
 import org.junit.Test;
+import ru.betry.App;
+
 import static org.junit.Assert.*;
 
 public class AppTest {
