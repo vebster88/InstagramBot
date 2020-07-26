@@ -13,6 +13,11 @@ class User {
     User() {
         postList = new ArrayList<>();
     }
+    User(String login, String password) {
+        this.login = login;
+        this.password = password;
+    }
+
 
     public String getLogin() {
         return login;

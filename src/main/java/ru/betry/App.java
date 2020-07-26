@@ -6,7 +6,7 @@ package ru.betry;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
-import com.pengrad.telegrambot.model.User;
+
 import com.pengrad.telegrambot.request.SendMessage;
 
 import java.util.HashMap;
@@ -31,10 +31,24 @@ public class App {
 
             updates.forEach(update -> {
                 Integer userID = update.message().from().id();
+                // проверка наличия логина и пароля
                 if (!users.containsKey(userID)) {
                     bot.execute(new SendMessage(update.message().chat().id(),
-                            "Вам необходимо прислать логин и пароль в одной строке через пробел"));
-                    users.put(update.message().from().id(), null);
+                            "Вам необходимо прислать логин и пароль в одной строке через пробел"
+                    //"Hello world"
+                    ));
+                    users.put(userID, null);
+                } else {
+                    if (users.get(userID) == null) { // запись логина и пароля
+                        String[] loginAndPassword = update.message().text().split(" ");
+                        User user = new User(loginAndPassword[0], loginAndPassword[1]);
+                        users.put(userID, user);
+                        bot.execute(new SendMessage(update.message().chat().id(),
+                                "Все работает! Теперь вы можете присылать нам текст, изображение, геопозицию для Инстаграм (в одном сообщении)"));
+                                //"Hello"));
+                    } else {
+                        System.out.println(update.toString());
+                    }
                 }
             });
 
