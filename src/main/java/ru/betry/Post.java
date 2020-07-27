@@ -6,6 +6,7 @@ class Post {
     private String photo;
     private String geo;
 
+
     public String getTitle() {
         return title;
     }

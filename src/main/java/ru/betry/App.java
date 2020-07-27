@@ -7,33 +7,33 @@ package ru.betry;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 
-import com.pengrad.telegrambot.model.File;
+
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.GetFileResponse;
-import okio.Utf8;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 
 public class App {
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        String TOKEN = "1347256899:AAE5HrH2bRs8fQdSOq9TSTI_nO1Y8eYpxWw";
-            //ID   ѕользователь
+        Properties properties = new Properties();
+        properties.load(new FileInputStream("app.properties"));
+//           //ID   ѕользователь
         Map<Integer, User> users = new HashMap<>();
 
-        TelegramBot bot = new TelegramBot(TOKEN);
+        TelegramBot bot = new TelegramBot(properties.getProperty("telegram_token"));
         bot.setUpdatesListener(updates -> {
             updates.forEach(System.out::println);
-            //логин и пароль
-            //изображение
-            //текст под изображением
-            //геопозици€
 
             updates.forEach(update -> {
                 Integer userID = update.message().from().id();
@@ -55,14 +55,18 @@ public class App {
                         Post post = new Post();
                         post.setTitle(update.message().text());
                         GetFileResponse fileResponse = bot.execute(new GetFile(update.message().photo()[0].fileId()));
-                        File file = fileResponse.file();
-                        String fullPath = bot.getFullFilePath(file);
+                        String fullPath = bot.getFullFilePath(fileResponse.file());
                         System.out.println(fullPath);
                         try {
-                            HttpDownload.downloadFile(fullPath, "./images", "test.jpg");
+                            HttpDownload.downloadFile(fullPath, "./images", update.message().photo()[0].fileId() + ".jpg");
+
                         } catch (IOException e) {
                             System.err.println(e.getMessage());
                         }
+                        post.setPhoto(new File("./images/" + update.message().photo()[0].fileId() + ".jpg").getPath());
+                        users.get(userID).addPost(post);
+
+                        System.out.println(users.toString());
                     }
 
                 }
