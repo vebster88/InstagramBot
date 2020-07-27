@@ -14,6 +14,7 @@ class User {
         postList = new ArrayList<>();
     }
     User(String login, String password) {
+        postList = new ArrayList<>();
         this.login = login;
         this.password = password;
     }

@@ -7,10 +7,16 @@ package ru.betry;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 
+import com.pengrad.telegrambot.model.File;
+import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.GetFileResponse;
+import okio.Utf8;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 
 public class App {
 
@@ -18,37 +24,47 @@ public class App {
     public static void main(String[] args) {
 
         String TOKEN = "1347256899:AAE5HrH2bRs8fQdSOq9TSTI_nO1Y8eYpxWw";
-            //ID   РџРѕР»СЊР·РѕРІР°С‚РµР»СЊ
+            //ID   Пользователь
         Map<Integer, User> users = new HashMap<>();
 
         TelegramBot bot = new TelegramBot(TOKEN);
         bot.setUpdatesListener(updates -> {
             updates.forEach(System.out::println);
-            //Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ
-            //РёР·РѕР±СЂР°Р¶РµРЅРёРµ
-            //С‚РµРєСЃС‚ РїРѕРґ РёР·РѕР±СЂР°Р¶РµРЅРёРµРј
-            //РіРµРѕРїРѕР·РёС†РёСЏ
+            //логин и пароль
+            //изображение
+            //текст под изображением
+            //геопозиция
 
             updates.forEach(update -> {
                 Integer userID = update.message().from().id();
-                // РїСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ
+                // проверка наличия логина и пароля
                 if (!users.containsKey(userID)) {
                     bot.execute(new SendMessage(update.message().chat().id(),
-                            "Р’Р°Рј РЅРµРѕР±С…РѕРґРёРјРѕ РїСЂРёСЃР»Р°С‚СЊ Р»РѕРіРёРЅ Рё РїР°СЂРѕР»СЊ РІ РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ С‡РµСЂРµР· РїСЂРѕР±РµР»"
-                    //"Hello world"
-                    ));
+                            "Вам необходимо прислать логин и пароль в одной строке через пробел"));
                     users.put(userID, null);
                 } else {
-                    if (users.get(userID) == null) { // Р·Р°РїРёСЃСЊ Р»РѕРіРёРЅР° Рё РїР°СЂРѕР»СЏ
+                    if (users.get(userID) == null) { // запись логина и пароля
                         String[] loginAndPassword = update.message().text().split(" ");
                         User user = new User(loginAndPassword[0], loginAndPassword[1]);
                         users.put(userID, user);
                         bot.execute(new SendMessage(update.message().chat().id(),
-                                "Р’СЃРµ СЂР°Р±РѕС‚Р°РµС‚! РўРµРїРµСЂСЊ РІС‹ РјРѕР¶РµС‚Рµ РїСЂРёСЃС‹Р»Р°С‚СЊ РЅР°Рј С‚РµРєСЃС‚, РёР·РѕР±СЂР°Р¶РµРЅРёРµ, РіРµРѕРїРѕР·РёС†РёСЋ РґР»СЏ РРЅСЃС‚Р°РіСЂР°Рј (РІ РѕРґРЅРѕРј СЃРѕРѕР±С‰РµРЅРёРё)"));
-                                //"Hello"));
-                    } else {
+                                "Все работает! Теперь вы можете присылать нам текст, изображение, геопозицию для " +
+                                        "Инстаграм (в одном сообщении)"));
+                    } else if (update.message().photo().length > 0) {
                         System.out.println(update.toString());
+                        Post post = new Post();
+                        post.setTitle(update.message().text());
+                        GetFileResponse fileResponse = bot.execute(new GetFile(update.message().photo()[0].fileId()));
+                        File file = fileResponse.file();
+                        String fullPath = bot.getFullFilePath(file);
+                        System.out.println(fullPath);
+                        try {
+                            HttpDownload.downloadFile(fullPath, "./images", "test.jpg");
+                        } catch (IOException e) {
+                            System.err.println(e.getMessage());
+                        }
                     }
+
                 }
             });
 

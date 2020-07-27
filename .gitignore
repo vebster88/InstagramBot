@@ -5,6 +5,7 @@ gradlew
 build
 gradlew.bat
 gradle
+*.jpg
 
 # Ignore Gradle build output directory
 build
