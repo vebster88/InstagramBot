@@ -28,7 +28,7 @@ public class App {
 
         Properties properties = new Properties();
         properties.load(new FileInputStream("app.properties"));
-//           //ID   Пользователь
+//           //ID   ГЏГ®Г«ГјГ§Г®ГўГ ГІГҐГ«Гј
         Map<Integer, User> users = new HashMap<>();
 
         TelegramBot bot = new TelegramBot(properties.getProperty("telegram_token"));
@@ -37,19 +37,19 @@ public class App {
 
             updates.forEach(update -> {
                 Integer userID = update.message().from().id();
-                // проверка наличия логина и пароля
+                // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г Г«ГЁГ·ГЁГї Г«Г®ГЈГЁГ­Г  ГЁ ГЇГ Г°Г®Г«Гї
                 if (!users.containsKey(userID)) {
                     bot.execute(new SendMessage(update.message().chat().id(),
-                            "Вам необходимо прислать логин и пароль в одной строке через пробел"));
+                            "Г‚Г Г¬ Г­ГҐГ®ГЎГµГ®Г¤ГЁГ¬Г® ГЇГ°ГЁГ±Г«Г ГІГј Г«Г®ГЈГЁГ­ ГЁ ГЇГ Г°Г®Г«Гј Гў Г®Г¤Г­Г®Г© Г±ГІГ°Г®ГЄГҐ Г·ГҐГ°ГҐГ§ ГЇГ°Г®ГЎГҐГ«"));
                     users.put(userID, null);
                 } else {
-                    if (users.get(userID) == null) { // запись логина и пароля
+                    if (users.get(userID) == null) { // Г§Г ГЇГЁГ±Гј Г«Г®ГЈГЁГ­Г  ГЁ ГЇГ Г°Г®Г«Гї
                         String[] loginAndPassword = update.message().text().split(" ");
                         User user = new User(loginAndPassword[0], loginAndPassword[1]);
                         users.put(userID, user);
                         bot.execute(new SendMessage(update.message().chat().id(),
-                                "Все работает! Теперь вы можете присылать нам текст, изображение, геопозицию для " +
-                                        "Инстаграм (в одном сообщении)"));
+                                "Г‚Г±ГҐ Г°Г ГЎГ®ГІГ ГҐГІ! Г’ГҐГЇГҐГ°Гј ГўГ» Г¬Г®Г¦ГҐГІГҐ ГЇГ°ГЁГ±Г»Г«Г ГІГј Г­Г Г¬ ГІГҐГЄГ±ГІ, ГЁГ§Г®ГЎГ°Г Г¦ГҐГ­ГЁГҐ, ГЈГҐГ®ГЇГ®Г§ГЁГ¶ГЁГѕ Г¤Г«Гї " +
+                                        "Г€Г­Г±ГІГ ГЈГ°Г Г¬ (Гў Г®Г¤Г­Г®Г¬ Г±Г®Г®ГЎГ№ГҐГ­ГЁГЁ)"));
                     } else if (update.message().photo().length > 0) {
                         System.out.println(update.toString());
                         Post post = new Post();
@@ -75,8 +75,4 @@ public class App {
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
         });
     }
-
-
-
-
 }
